@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BORSA PROFILO - Kafeterya Borsası</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="images/logo.png" alt="BORSA PROFILO Logo" id="site-logo">
+            <h1>BORSA PROFILO</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#" class="active">Piyasa</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="main-grid">
+            <aside class="left-panel">
+                <section id="watchlist">
+                    <h2>Kafeterya Hisseleri</h2>
+                    <div class="table-container">
+                        <table id="stock-table">
+                            <thead>
+                                <tr>
+                                    <th>Symbol</th>
+                                    <th>Name</th>
+                                    <th>Price (₺)</th>
+                                    <th>Değişim</th>
+                                    <th>% Değişim</th>
+                                    <th>Hacim</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Stock data will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </aside>
+
+            <section class="center-panel">
+                <div id="chart-header">
+                    <h2 id="current-stock-chart-title">PZA - Pizza Dilimi</h2>
+                    <div id="current-stock-chart-info">
+                        <span id="chart-price" class="positive">3.50</span>
+                        <span id="chart-change" class="positive">+0.15 (+4.48%)</span>
+                    </div>
+                </div>
+                <div id="chart-container">
+                    <canvas id="stockChartCanvas"></canvas>
+                </section>
+            </section>
+
+            <aside class="right-panel">
+                <section id="trading-panel">
+                    <h2>İşlem Paneli</h2>
+                    <form id="trade-form">
+                        <div class="form-group">
+                            <label for="trade-stock-symbol">Hisse Sembolü:</label>
+                            <input type="text" id="trade-stock-symbol" name="stock-symbol" value="PZA" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="trade-quantity">Miktar:</label>
+                            <input type="number" id="trade-quantity" name="quantity" value="1" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Tahmini Tutar:</label>
+                            <span id="estimated-value">₺0.00</span>
+                        </div>
+                        <button type="submit" id="buy-button" class="trade-button">SATIN AL</button>
+                    </form>
+                </section>
+                <section id="news-feed">
+                    <h2>Kafeterya Günlüğü</h2>
+                    <ul id="news-list">
+                        <li><strong>SON DAKİKA:</strong> BORSA Profilo çöktü! Fiyatlar tavan yaptı. (Yatırım tavsiyesi değildir.)</li>
+                        <li><strong>ANALİZ:</strong> Kantindeki kumrular bittiği için uzmanlar fiyatta artış olur dediler (bence).</li>
+                        <li><strong>UYARI:</strong> Engin Abi, hazırladığı dürümlere "bir tutam sevgi" kattığını ifade etti.</li>
+                    </ul>
+                </section>
+            </aside>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 BORSA PROFILO - Site Şaka Amaçlıdır</p>
+    </footer>
+
+    <div id="image-popup-container" class="image-popup">
+        <img src="" alt="Satın Alma Sonucu" id="popup-image">
+        <button id="close-popup-btn">Kapat</button>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
