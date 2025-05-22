@@ -1,0 +1,401 @@
+/* General Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: #131722; /* Dark background */
+    color: #d1d4dc; /* Light grey text */
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+a {
+    color: #2962FF;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Header */
+header {
+    background-color: #1e222d; /* Slightly lighter dark */
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #2a2e39;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+#site-logo {
+    height: 40px; /* Adjust as needed */
+    margin-right: 15px;
+}
+
+header h1 {
+    font-size: 1.8em;
+    margin: 0;
+    color: #efefef;
+    font-weight: 500;
+}
+
+header nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+header nav ul li {
+    margin-left: 20px;
+}
+
+header nav ul li a {
+    color: #b2b5be;
+    font-weight: 500;
+    padding: 5px 0;
+    border-bottom: 2px solid transparent;
+    transition: color 0.3s ease, border-bottom-color 0.3s ease;
+}
+
+header nav ul li a:hover,
+header nav ul li a.active {
+    color: #ffffff;
+    border-bottom-color: #2962FF;
+}
+
+/* Main Content Area */
+main {
+    padding: 15px;
+}
+
+.main-grid {
+    display: grid;
+    /* Sol panel (hisse listesi), Orta panel (grafik), Sağ panel (işlem paneli, haberler) */
+    grid-template-columns: 280px 1fr 280px; /* 3 sütunlu yapıya geri dönüş */
+    gap: 15px;
+    min-height: calc(100vh - 120px); /* Adjust based on header/footer height */
+}
+
+aside, .center-panel section {
+    background-color: #1e222d;
+    padding: 15px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+h2 {
+    font-size: 1.2em;
+    color: #efefef;
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #2a2e39;
+    font-weight: 500;
+}
+
+/* Left Panel: Watchlist */
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.table-container {
+    max-height: calc(100vh - 200px); /* Adjust as needed, considering other elements */
+    overflow-y: auto;
+}
+
+#stock-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+}
+
+#stock-table th, #stock-table td {
+    padding: 8px 5px;
+    text-align: left;
+    border-bottom: 1px solid #2a2e39;
+}
+
+#stock-table th {
+    background-color: #2a2e39;
+    color: #b2b5be;
+    font-weight: 500;
+    position: sticky;
+    top: 0;
+}
+
+#stock-table tbody tr:hover {
+    background-color: #2a2e39;
+    cursor: pointer;
+}
+
+#stock-table td:nth-child(3), /* Price */
+#stock-table td:nth-child(4), /* Change */
+#stock-table td:nth-child(5) { /* % Change */
+    text-align: right;
+}
+#stock-table td:nth-child(6) { /* Volume */
+    text-align: right;
+    color: #787b86;
+}
+
+
+/* Center Panel: Chart & Trading */
+.center-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #2a2e39;
+    margin-bottom: 10px;
+}
+#chart-header h2 {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+#current-stock-chart-info {
+    font-size: 1.1em;
+}
+#current-stock-chart-info #chart-price {
+    font-weight: bold;
+    font-size: 1.3em;
+    margin-right: 10px;
+}
+
+#chart-container {
+    flex-grow: 1;
+    background-color: #131722;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #2a2e39;
+    border-radius: 4px;
+    min-height: 350px; /* Grafik için minimum yükseklik */
+    position: relative; /* Chart.js'in doğru boyutlanması için */
+}
+
+/* Chart.js canvas'ının container'a tam uyması için */
+#stockChartCanvas {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* Trading Panel Styles */
+#trading-panel {
+    /* margin-top: 15px;  Bu artık .right-panel'in gap'i ile sağlanabilir */
+    padding-top: 15px;
+}
+
+#trade-form .form-group {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+}
+
+#trade-form label {
+    flex-basis: 150px; /* Adjust as needed */
+    margin-right: 10px;
+    color: #b2b5be;
+}
+
+#trade-form input[type="text"],
+#trade-form input[type="number"] {
+    flex-grow: 1;
+    padding: 8px;
+    background-color: #2a2e39;
+    border: 1px solid #3c4043;
+    color: #d1d4dc;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+#trade-form input[type="text"][readonly] {
+    background-color: #22252a;
+    cursor: not-allowed;
+}
+#estimated-value {
+    font-weight: bold;
+}
+
+.trade-button {
+    background-color: #2962FF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1em;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.trade-button:hover {
+    background-color: #0039cb;
+}
+
+/* Right Panel: Trading and News */
+.right-panel {
+    display: flex;
+    flex-direction: column; /* İşlem panelini ve haberleri alt alta sıralar */
+    gap: 15px; /* Paneller arası boşluk */
+}
+
+#news-feed ul {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 10px;
+}
+#news-feed li {
+    padding: 6px 0;
+    border-bottom: 1px dashed #2a2e39;
+    font-size: 0.9em;
+}
+#news-feed li:last-child {
+    border-bottom: none;
+}
+#news-feed li strong {
+    color: #2962FF; /* Highlight news keywords */
+}
+
+
+/* Utility Classes */
+.positive {
+    color: #00c853; /* Green for positive changes */
+}
+
+.negative {
+    color: #d50000; /* Red for negative changes */
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 15px;
+    background-color: #1e222d;
+    border-top: 1px solid #2a2e39;
+    font-size: 0.8em;
+    color: #787b86;
+}
+
+/* Scrollbar styling (optional, for a more polished look) */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #1e222d;
+}
+::-webkit-scrollbar-thumb {
+    background: #3c4043;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Basic Responsive Adjustments */
+@media (max-width: 1200px) {
+    .main-grid {
+        grid-template-columns: 250px 1fr 250px; /* 3 sütun için daraltma */
+    }
+    #trade-form label {
+        flex-basis: 120px;
+    }
+}
+
+@media (max-width: 992px) {
+    .main-grid {
+        grid-template-columns: 1fr; /* Panelleri alt alta yığ */
+    }
+    .left-panel, .center-panel, .right-panel {
+        margin-bottom: 15px;
+    }
+    .table-container {
+        max-height: 250px; /* Daha küçük ekranlar için tablo yüksekliği */
+    }
+    #chart-container {
+        min-height: 300px; /* Mobil için grafik yüksekliği */
+    }
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    header nav ul {
+        margin-top: 10px;
+    }
+    header nav ul li {
+        margin-left: 0;
+        margin-right: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        font-size: 13px;
+    }
+    header h1 {
+        font-size: 1.5em;
+    }
+    #site-logo {
+        height: 30px;
+    }
+    .trade-button {
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+}
+
+/* Image Popup Styles */
+.image-popup {
+    display: none; /* Initially hidden */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8); /* Darker overlay */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it's on top */
+    padding: 20px;
+    box-sizing: border-box;
+}
+.image-popup img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain; /* Ensure image aspect ratio is maintained */
+    border: 4px solid #2962FF; /* Blue border */
+    border-radius: 8px;
+    box-shadow: 0 0 25px rgba(41, 98, 255, 0.5);
+}
+.image-popup #close-popup-btn {
+    position: absolute;
+    top: 25px;
+    right: 35px;
+    padding: 10px 18px;
+    background-color: #d50000; /* Red close button */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
