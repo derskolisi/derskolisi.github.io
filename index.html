@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Okulların Kapanmasına Kalan Süre</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            margin: 0; /* Body marginını sıfırlayalım */
+            padding-top: 50px; /* İçerik için üstten boşluk */
+            background-color: #1e1e1e; /* Koyu tema arka plan rengi */
+            color: #e0e0e0; /* Koyu tema genel metin rengi */
+            padding-bottom: 50px; /* Alt sayaca yer açmak için */
+        }
+        h1 {
+            color: #bb86fc; /* Koyu tema için vurgu rengi (morumsu) */
+        }
+        #countdown {
+            font-size: 2.5em;
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 15px; /* Biraz daralttım */
+        }
+        .time-unit {
+            background-color: #2c2c2c; /* Kartlar için biraz daha açık koyu renk */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3); /* Koyu temada daha belirgin gölge */
+            min-width: 100px;
+        }
+        .time-unit span {
+            display: block;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #03dac6; /* Koyu tema için diğer bir vurgu rengi (turkuaz) */
+        }
+        .time-unit div {
+            font-size: 0.8em;
+            color: #a0a0a0; /* Alt başlıklar için daha açık gri */
+            margin-top: 5px;
+        }
+
+        /* Tenefüs Sayacı Stilleri */
+        #recess-section {
+            margin-top: 70px; /* Üstteki sayaçtan ayırmak için */
+            padding-top: 40px;
+            border-top: 1px solid #444; /* Ayırıcı çizgi */
+        }
+        #recess-section h2 {
+            color: #bb86fc; /* Ana başlıkla tutarlı */
+            font-size: 2em; /* Biraz daha küçük */
+        }
+        #recess-countdown-units { /* Tenefüs zaman birimleri için */
+            font-size: 1.8em; /* Biraz daha küçük */
+            margin-top: 20px;
+        }
+        #recess-message-only {
+            color: #e0e0e0;
+            font-size: 1.3em;
+            padding: 20px;
+        }
+
+        /* Tenefüs Listesi Stilleri */
+        #recess-list-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #444;
+        }
+        #recess-list-section h3 {
+            color: #bb86fc;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+        #recess-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 auto;
+            max-width: 400px; /* Listenin çok geniş olmasını engelle */
+        }
+        #recess-list li {
+            background-color: #2c2c2c;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            text-align: left;
+            font-size: 0.9em; /* Varsayılan olarak biraz daha küçük */
+            opacity: 0.7;     /* Varsayılan olarak biraz saydam */
+            transition: font-size 0.2s ease-out, opacity 0.2s ease-out, background-color 0.2s ease-out; /* Yumuşak geçiş */
+        }
+        #recess-list li.passed {
+            text-decoration: line-through; /* Geçenlerin üstünü çiz */
+            color: #777; /* Geçenlerin rengini solgun yap */
+            opacity: 0.5; /* Geçenler daha da saydam */
+        }
+        #recess-list li.highlight { /* Mevcut veya sıradaki önemli teneffüs için */
+            font-size: 1em;   /* Normal boyut */
+            opacity: 1;       /* Tamamen görünür */
+            font-weight: bold; /* Biraz daha vurgulu */
+            background-color: #3a3a3a; /* Hafif farklı arka plan */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Okulların Kapanmasına Kalan Süre</h1>
+
+    <div id="countdown">
+        <div class="time-unit"><span id="days">00</span><div>Gün</div></div>
+        <div class="time-unit"><span id="hours">00</span><div>Saat</div></div>
+        <div class="time-unit"><span id="minutes">00</span><div>Dakika</div></div>
+        <div class="time-unit"><span id="seconds">00</span><div>Saniye</div></div>
+    </div>
+
+    <!-- Tenefüs Sayacı Bölümü -->
+    <div id="recess-section">
+        <h2 id="recess-status-title">Tenefüs Durumu</h2>
+        <div id="recess-countdown-units" class="time-unit-container" style="display: none; justify-content: center; gap: 15px;">
+            <div class="time-unit"><span id="recess-minutes">00</span><div>Dakika</div></div>
+            <div class="time-unit"><span id="recess-seconds">00</span><div>Saniye</div></div>
+        </div>
+        <div id="recess-message-only" style="display: none;">
+            <!-- Tenefüs mesajları buraya gelecek -->
+        </div>
+    </div>
+
+    <!-- Tenefüs Listesi Bölümü -->
+    <div id="recess-list-section">
+        <h3>Tenefüs Listesi</h3>
+        <ul id="recess-list"></ul>
+    </div>
+
+    <script>
+        // OKULLARIN KAPANMASI SAYACI
+        // ===========================
+        function updateCountdown() {
+            const now = new Date();
+            // Hedef tarih: 20 Haziran. Ay 0'dan başlar, bu yüzden Haziran 5'tir.
+            const targetDate = new Date(now.getFullYear(), 5, 20, 0, 0, 0); // Yıl, Ay (0-11), Gün, Saat, Dakika, Saniye
+
+            // Eğer 20 Haziran bu yıl geçtiyse, hedef tarihi gelecek yıla ayarla
+            if (now > targetDate) {
+                targetDate.setFullYear(now.getFullYear() + 1);
+            }
+
+            const difference = targetDate - now; // Fark milisaniye cinsinden
+
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+            if (difference < 0) {
+                // Sayaç bittiğinde
+                document.getElementById("countdown").innerHTML = "Okullar kapandı! İyi tatiller!";
+                clearInterval(timerInterval); // Sayacı durdur
+            } else {
+                document.getElementById("days").innerHTML = days < 10 ? "0" + days : days;
+                document.getElementById("hours").innerHTML = hours < 10 ? "0" + hours : hours;
+                document.getElementById("minutes").innerHTML = minutes < 10 ? "0" + minutes : minutes;
+                document.getElementById("seconds").innerHTML = seconds < 10 ? "0" + seconds : seconds;
+            }
+        }
+
+        // Sayacı her 1 saniyede bir güncelle
+        const timerInterval = setInterval(updateCountdown, 1000);
+
+        // Okul kapanma sayacını hemen başlat
+        updateCountdown();
+
+
+        // TENEFÜS SAYACI VE LİSTESİ
+        // ==========================
+
+        // --- TENEFÜS SAATLERİ AYARLARI ---
+        // Her bir tenefüs için başlangıç saatini (HH:MM formatında) ve süresini (dakika cinsinden) girin.
+        // Örnek: { start: "09:40", duration: 10 } // Saat 09:40'ta başlar, 10 dakika sürer.
+        // Saatleri günün erken saatlerinden geç saatlerine doğru sıralı girmeniz önemlidir.
+        const TENEFFUS_SAATLERI = [
+        { start: "09:30", duration: 10 }, // 1. Ders Sonu
+            { start: "10:40", duration: 10 }, // 2. Ders Sonu
+            { start: "11:50", duration: 10 }, // 3. Ders Sonu
+            { start: "13:00", duration: 45 }, // 4. Ders Sonu
+            { start: "14:45", duration: 10 }, // Öğle Arası
+            { start: "15:25", duration: 10 }, // 5. Ders Sonu (Öğleden sonra)
+            // İhtiyaçlarınıza göre burayı düzenleyebilirsiniz.
+        ];
+        // --- AYARLAR SONU ---
+
+        const recessTitleEl = document.getElementById("recess-status-title");
+        const recessMinutesEl = document.getElementById("recess-minutes");
+        const recessSecondsEl = document.getElementById("recess-seconds");
+        const recessCountdownUnitsEl = document.getElementById("recess-countdown-units");
+        const recessMessageOnlyEl = document.getElementById("recess-message-only");
+        const recessListEl = document.getElementById("recess-list");
+
+        function updateRecessCountdown() {
+            const now = new Date();
+            let targetTime = null;
+            let statusText = "";
+            let showCountdownUnits = false;
+            let messageOnlyText = "";
+            let currentRecessIndex = -1; // Şu anki veya sıradaki teneffüsün indeksi
+
+            if (TENEFFUS_SAATLERI.length === 0) {
+                messageOnlyText = "Tenefüs saatleri ayarlanmamış.";
+            } else {
+                // 1. Mevcut bir tenefüste miyiz kontrol et
+                for (let index = 0; index < TENEFFUS_SAATLERI.length; index++) {
+                    const recess = TENEFFUS_SAATLERI[index];
+                    const [hours, minutes] = recess.start.split(':').map(Number);
+                    const recessStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, 0);
+                    const recessEnd = new Date(recessStart.getTime() + recess.duration * 60000);
+
+                    if (now >= recessStart && now < recessEnd) {
+                        targetTime = recessEnd;
+                        statusText = "Tenefüs Bitişine:";
+                        showCountdownUnits = true;
+                        currentRecessIndex = index;
+                        break;
+                    }
+                }
+
+                // 2. Tenefüste değilsek, sıradaki tenefüsü bul
+                if (!showCountdownUnits) {
+                    for (let index = 0; index < TENEFFUS_SAATLERI.length; index++) {
+                        const recess = TENEFFUS_SAATLERI[index];
+                        const [hours, minutes] = recess.start.split(':').map(Number);
+                        const recessStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, 0);
+
+                        if (now < recessStart) {
+                            targetTime = recessStart;
+                            statusText = "Sıradaki Tenefüse:";
+                            showCountdownUnits = true;
+                            currentRecessIndex = index;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            recessTitleEl.innerHTML = statusText || "Tenefüs Durumu";
+
+            if (showCountdownUnits && targetTime) {
+                const difference = targetTime - now;
+                if (difference > 0) {
+                    const displayMinutes = Math.floor(difference / (1000 * 60));
+                    const displaySeconds = Math.floor((difference / 1000) % 60);
+                    recessMinutesEl.innerHTML = displayMinutes < 10 ? "0" + displayMinutes : displayMinutes;
+                    recessSecondsEl.innerHTML = displaySeconds < 10 ? "0" + displaySeconds : displaySeconds;
+                    recessCountdownUnitsEl.style.display = 'flex';
+                    recessMessageOnlyEl.style.display = 'none';
+                } else {
+                    recessCountdownUnitsEl.style.display = 'none';
+                    // Zaman doldu, bir sonraki tick'te durum güncellenecek
+                }
+            } else {
+                recessCountdownUnitsEl.style.display = 'none';
+                recessMessageOnlyEl.style.display = 'block';
+                recessMessageOnlyEl.innerHTML = messageOnlyText || "Bugünkü tenefüsler bitti.";
+            }
+
+            // Tenefüs Listesini Güncelle
+            recessListEl.innerHTML = ''; // Listeyi temizle
+            const listItemsHtmlOutput = [];
+
+            if (TENEFFUS_SAATLERI.length > 0) {
+                let displayCenterIndex = currentRecessIndex;
+
+                // Eğer tüm teneffüsler bittiyse veya henüz hiçbiri başlamadıysa, listenin merkezini ayarla
+                if (currentRecessIndex === -1) {
+                    if (statusText === "Bugünkü tenefüsler bitti.") {
+                        displayCenterIndex = TENEFFUS_SAATLERI.length - 1; // Son teneffüsü merkez al
+                    } else if (TENEFFUS_SAATLERI.length > 0 && (statusText === "Tenefüs Durumu" || statusText === "")) {
+                        // Bu durum, sayfa ilk yüklendiğinde ve henüz sıradaki teneffüs belirlenmediğinde olabilir.
+                        // Ya da TENEFFUS_SAATLERI var ama hiçbiri mevcut saate uymuyor (örneğin, çok erken veya çok geç).
+                        // İlk teneffüsü merkez alalım.
+                        let firstUpcoming = -1;
+                        for(let i=0; i < TENEFFUS_SAATLERI.length; i++){
+                            const [h, m] = TENEFFUS_SAATLERI[i].start.split(':').map(Number);
+                            const rStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
+                            if(now < rStart){
+                                firstUpcoming = i;
+                                break;
+                            }
+                        }
+                        if(firstUpcoming !== -1){
+                            displayCenterIndex = firstUpcoming;
+                        } else {
+                             // Hiç gelecek teneffüs yoksa (hepsi geçmiş olabilir), sonuncuyu merkez al
+                            displayCenterIndex = TENEFFUS_SAATLERI.length -1;
+                        }
+                    }
+                }
+
+
+                const indicesToShow = [];
+                const totalRecesses = TENEFFUS_SAATLERI.length;
+
+                if (totalRecesses === 0) { // Hiç teneffüs yoksa bir şey yapma
+                    // Bu durum zaten yukarıda TENEFFUS_SAATLERI.length > 0 ile kontrol ediliyor.
+                } else if (totalRecesses <= 3) { // Eğer 3 veya daha az teneffüs varsa hepsini göster
+                    for (let i = 0; i < totalRecesses; i++) {
+                        indicesToShow.push(i);
+                    }
+                } else if (displayCenterIndex <= 0) { // Listenin başındaysak veya merkez belirlenememişse
+                    indicesToShow.push(0, 1, 2);
+                } else if (displayCenterIndex >= totalRecesses - 1) { // Listenin sonundaysak
+                    indicesToShow.push(totalRecesses - 3, totalRecesses - 2, totalRecesses - 1);
+                } else { // Ortadaysak
+                    indicesToShow.push(displayCenterIndex - 1, displayCenterIndex, displayCenterIndex + 1);
+                }
+
+                for (const index of indicesToShow) {
+                    if (index < 0 || index >= totalRecesses) { // Geçersiz indeksleri atla
+                        continue;
+                    }
+
+                    const recess = TENEFFUS_SAATLERI[index];
+                    let itemText = `${recess.start} - ${recess.duration} dk`;
+                    let itemClass = ""; // Varsayılan: küçük ve saydam
+
+                    const [hours, minutes] = recess.start.split(':').map(Number);
+                    const recessStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, 0);
+                    const recessEnd = new Date(recessStart.getTime() + recess.duration * 60000);
+
+                    if (now >= recessEnd) {
+                        itemClass = "passed";
+                        itemText += " (Geçti)";
+                    } else if (now >= recessStart && now < recessEnd) { // Şu anki teneffüs
+                        itemClass = "highlight";
+                        itemText += " (Şimdi)";
+                    } else if (index === currentRecessIndex && statusText === "Sıradaki Tenefüse:") {
+                        // Bu, eğer aktif bir teneffüs yoksa, sıradaki ilk teneffüstür.
+                        itemClass = "highlight";
+                    }
+                    // itemClass boş kalırsa (gelecekteki ama sıradaki olmayan teneffüsler),
+                    // varsayılan li stili (küçük ve saydam) uygulanır.
+
+                    listItemsHtmlOutput.push(`<li class="${itemClass}">${itemText}</li>`);
+                }
+            }
+            recessListEl.innerHTML = listItemsHtmlOutput.join('');
+        }
+
+        // Tenefüs sayacını ve listesini her saniye güncelle
+        const recessTimerInterval = setInterval(updateRecessCountdown, 1000);
+        // Tenefüs sayacını ve listesini hemen başlat
+        updateRecessCountdown();
+    </script>
+
+</body>
+</html>
